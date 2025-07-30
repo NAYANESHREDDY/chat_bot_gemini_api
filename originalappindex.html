@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayanesh Chatbot</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1> Chatbot</h1>
+        <div id="chatbox" class="border p-3" style="height: 300px; overflow-y: scroll;">
+            <div id="messages"></div>
+        </div>
+        <textarea id="user_input" class="form-control mt-3" rows="2" placeholder="Type a message..."></textarea>
+        <button id="send_button" class="btn btn-primary mt-2">Send</button>
+    </div>
+
+    <script>
+        document.getElementById('send_button').onclick = function() {
+            const userInput = document.getElementById('user_input').value;
+            if (!userInput) return;
+
+            // Display user message
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<div><strong>You:</strong> ${userInput}</div>`;
+
+            // Clear input
+            document.getElementById('user_input').value = '';
+
+            // Send message to Flask backend
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display bot response
+                if (data.response) {
+                    messagesDiv.innerHTML += `<div><strong>Bot:</strong> ${data.response}</div>`;
+                } else {
+                    messagesDiv.innerHTML += `<div><strong>Error:</strong> ${data.error}</div>`;
+                }
+                // Scroll to the bottom of chat
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                messagesDiv.innerHTML += `<div><strong>Error:</strong> ${error}</div>`;
+            });
+        };
+    </script>
+</body>
+</html>

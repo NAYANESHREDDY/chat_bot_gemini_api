@@ -1,0 +1,8 @@
+opencv-python
+pyttsx3
+openai
+speechrecognition
+requests
+numpy
+pyaudio
+AssemblyAI
